@@ -1,0 +1,10 @@
+set(MC_PATH ${CMAKE_CURRENT_LIST_DIR})
+
+set(MC_C_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/mc_init.c
+    ${CMAKE_CURRENT_LIST_DIR}/pid.c
+)
+    
+set(MC_INCLUDES 
+    ${CMAKE_CURRENT_LIST_DIR}
+)

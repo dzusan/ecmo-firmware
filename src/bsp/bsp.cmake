@@ -1,0 +1,348 @@
+set(BSP_PATH ${CMAKE_CURRENT_LIST_DIR})
+
+set(MCPU_FLAGS "-mthumb -mcpu=cortex-m7")
+set(VFP_FLAGS "-mfloat-abi=hard -mfpu=fpv5-d16")
+set(BSP_DEFINES "-DSTM32F7xx -DSTM32F777xx -DUSE_HAL_DRIVER") # STM32 SoC specific variables
+
+set(DRV_SRC_PATH ${THIRD_PARTY_ROOT}/stm32f7xx_hal_driver/Src)
+
+set(BSP_C_SOURCES 
+    ${THIRD_PARTY_ROOT}/cmsis_device_f7/Source/Templates/system_stm32f7xx.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/adc.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/bsp_gpio.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/bsp_init.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/clock.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/digin.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/cortex_interrupt.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/hall.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/keyboard.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/pwm.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/speaker.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/spidisp.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/tft.c
+)
+    
+set(BSP_ASM_SOURCES ${THIRD_PARTY_ROOT}/cmsis_device_f7/Source/Templates/gcc/startup_stm32f777xx.s)
+
+# HAL include chain:
+# 1. stm32f7xx_hal_conf.h                   -> stm32f7xx_hal.h
+# 2. if USE_HAL_DRIVER than stm32f7xx_hal.h -> stm32f7xx.h
+# 3. if __GNUC__ than cmsis_gcc.h           -> cmsis_compiler.h
+# 4. cmsis_compiler.h                       -> core_cm7.h
+# 5. core_cm7.h                             -> stm32f765xx.h
+# 6. system_stm32f7xx.h                     -> stm32f765xx.h
+# 7. if STM32F765xx than stm32f765xx.h      -> stm32f7xx.h
+# 8. stm32f7xx.h                            -> stm32f7xx_hal_def.h
+# 9. stm32f7xx_hal_def.h                    -> stm32f7xx_hal_***.h (to each driver file!)
+
+set(BSP_INCLUDES 
+    ${CMAKE_CURRENT_LIST_DIR}/include
+    ${THIRD_PARTY_ROOT}/stm32f7xx_hal_driver/Inc
+    ${THIRD_PARTY_ROOT}/cmsis_device_f7/Include
+    ${THIRD_PARTY_ROOT}/cmsis_core/Include
+)
+
+set(HAL_MODULE_ENABLED            ON )
+set(HAL_ADC_MODULE_ENABLED        ON )
+set(HAL_CAN_MODULE_ENABLED        ON )
+set(HAL_CAN_LEGACY_MODULE_ENABLED OFF)
+set(HAL_CEC_MODULE_ENABLED        OFF)
+set(HAL_CRC_MODULE_ENABLED        OFF)
+set(HAL_CRYP_MODULE_ENABLED       OFF)
+set(HAL_DAC_MODULE_ENABLED        OFF)
+set(HAL_DCMI_MODULE_ENABLED       OFF)
+set(HAL_DMA_MODULE_ENABLED        ON )
+set(HAL_DMA2D_MODULE_ENABLED      OFF)
+set(HAL_ETH_MODULE_ENABLED        OFF)
+set(HAL_ETH_LEGACY_MODULE_ENABLED OFF)
+set(HAL_EXTI_MODULE_ENABLED       ON )
+set(HAL_FLASH_MODULE_ENABLED      ON )
+set(HAL_NAND_MODULE_ENABLED       OFF)
+set(HAL_NOR_MODULE_ENABLED        OFF)
+set(HAL_SRAM_MODULE_ENABLED       OFF)
+set(HAL_SDRAM_MODULE_ENABLED      OFF)
+set(HAL_HASH_MODULE_ENABLED       OFF)
+set(HAL_GPIO_MODULE_ENABLED       ON )
+set(HAL_I2C_MODULE_ENABLED        ON )
+set(HAL_I2S_MODULE_ENABLED        OFF)
+set(HAL_IWDG_MODULE_ENABLED       OFF)
+set(HAL_LPTIM_MODULE_ENABLED      OFF)
+set(HAL_LTDC_MODULE_ENABLED       ON )
+set(HAL_PWR_MODULE_ENABLED        ON )
+set(HAL_QSPI_MODULE_ENABLED       OFF)
+set(HAL_RCC_MODULE_ENABLED        ON )
+set(HAL_RNG_MODULE_ENABLED        OFF)
+set(HAL_RTC_MODULE_ENABLED        OFF)
+set(HAL_SAI_MODULE_ENABLED        OFF)
+set(HAL_SD_MODULE_ENABLED         OFF)
+set(HAL_SPDIFRX_MODULE_ENABLED    OFF)
+set(HAL_SPI_MODULE_ENABLED        ON )
+set(HAL_TIM_MODULE_ENABLED        ON )
+set(HAL_UART_MODULE_ENABLED       ON )
+set(HAL_USART_MODULE_ENABLED      OFF)
+set(HAL_IRDA_MODULE_ENABLED       OFF)
+set(HAL_SMARTCARD_MODULE_ENABLED  OFF)
+set(HAL_WWDG_MODULE_ENABLED       OFF)
+set(HAL_CORTEX_MODULE_ENABLED     ON )
+set(HAL_PCD_MODULE_ENABLED        ON )
+set(HAL_HCD_MODULE_ENABLED        OFF)
+set(HAL_DFSDM_MODULE_ENABLED      OFF)
+set(HAL_DSI_MODULE_ENABLED        OFF)
+set(HAL_JPEG_MODULE_ENABLED       OFF)
+set(HAL_MDIOS_MODULE_ENABLED      OFF)
+set(HAL_SMBUS_MODULE_ENABLED      OFF)
+set(HAL_MMC_MODULE_ENABLED        OFF)
+
+if(HAL_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_MODULE_ENABLED")
+endif()
+
+if(HAL_RCC_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_rcc.c ${DRV_SRC_PATH}/stm32f7xx_hal_rcc_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_RCC_MODULE_ENABLED")
+endif()
+
+if(HAL_GPIO_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_gpio.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_GPIO_MODULE_ENABLED")
+endif()
+
+if(HAL_DMA_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_dma.c ${DRV_SRC_PATH}/stm32f7xx_hal_dma_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_DMA_MODULE_ENABLED")
+endif()
+   
+if(HAL_CORTEX_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_cortex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_CORTEX_MODULE_ENABLED")
+endif()
+
+if(HAL_ADC_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_adc.c ${DRV_SRC_PATH}/stm32f7xx_hal_adc_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_ADC_MODULE_ENABLED")
+endif()
+
+if(HAL_CAN_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_can.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_CAN_MODULE_ENABLED")
+endif()
+
+if(HAL_CAN_LEGACY_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_can_legacy.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_CAN_LEGACY_MODULE_ENABLED")
+endif()
+
+if(HAL_CEC_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_cec.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_CEC_MODULE_ENABLED")
+endif()
+
+if(HAL_CRC_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_crc.c ${DRV_SRC_PATH}/stm32f7xx_hal_crc_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_CRC_MODULE_ENABLED")
+endif()
+
+if(HAL_CRYP_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_cryp.hc ${DRV_SRC_PATH}/stm32f7xx_hal_cryp_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_CRYP_MODULE_ENABLED")
+endif()
+
+if(HAL_DMA2D_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_dma2d.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_DMA2D_MODULE_ENABLED")
+endif()
+
+if(HAL_DAC_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_dac.c ${DRV_SRC_PATH}/stm32f7xx_hal_dac_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_DAC_MODULE_ENABLED")
+endif()
+
+if(HAL_DCMI_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_dcmi.c ${DRV_SRC_PATH}/stm32f7xx_hal_dcmi_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_DCMI_MODULE_ENABLED")
+endif()
+
+if(HAL_ETH_MODULE_ENABLED)
+    # set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_eth.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_ETH_MODULE_ENABLED")
+endif()
+
+if(HAL_ETH_LEGACY_MODULE_ENABLED)
+    # set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_eth_legacy.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_ETH_LEGACY_MODULE_ENABLED")
+endif()
+
+if(HAL_EXTI_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_exti.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_EXTI_MODULE_ENABLED")
+endif()
+
+if(HAL_FLASH_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_flash.c ${DRV_SRC_PATH}/stm32f7xx_hal_flash_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_FLASH_MODULE_ENABLED")
+endif()
+ 
+if(HAL_SRAM_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_sram.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_SRAM_MODULE_ENABLED")
+endif()
+
+if(HAL_NOR_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_nor.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_NOR_MODULE_ENABLED")
+endif()
+
+if(HAL_NAND_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_nand.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_NAND_MODULE_ENABLED")
+endif()
+
+if(HAL_SDRAM_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_sdram.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_SDRAM_MODULE_ENABLED")
+endif()
+
+if(HAL_HASH_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_hash.c ${DRV_SRC_PATH}/stm32f7xx_hal_hash_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_HASH_MODULE_ENABLED")
+endif()
+
+if(HAL_I2C_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_i2c.c ${DRV_SRC_PATH}/stm32f7xx_hal_i2c_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_I2C_MODULE_ENABLED")
+endif()
+
+if(HAL_I2S_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_i2s.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_I2S_MODULE_ENABLED")
+endif()
+
+if(HAL_IWDG_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_iwdg.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_IWDG_MODULE_ENABLED")
+endif()
+
+if(HAL_LPTIM_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_lptim.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_LPTIM_MODULE_ENABLED")
+endif()
+
+if(HAL_LTDC_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_ltdc.c ${DRV_SRC_PATH}/stm32f7xx_hal_ltdc_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_LTDC_MODULE_ENABLED")
+endif()
+
+if(HAL_PWR_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_pwr.c ${DRV_SRC_PATH}/stm32f7xx_hal_pwr_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_PWR_MODULE_ENABLED")
+endif()
+
+if(HAL_QSPI_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_qspi.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_QSPI_MODULE_ENABLED")
+endif()
+
+if(HAL_RNG_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_rng.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_RNG_MODULE_ENABLED")
+endif()
+
+if(HAL_RTC_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_rtc.c ${DRV_SRC_PATH}/stm32f7xx_hal_rtc_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_RTC_MODULE_ENABLED")
+endif()
+
+if(HAL_SAI_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_sai.c ${DRV_SRC_PATH}/stm32f7xx_hal_sai_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_SAI_MODULE_ENABLED")
+endif()
+
+if(HAL_SD_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_sd.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_SD_MODULE_ENABLED")
+endif()
+
+if(HAL_SPDIFRX_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_spdifrx.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_SPDIFRX_MODULE_ENABLED")
+endif()
+
+if(HAL_SPI_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_spi.c ${DRV_SRC_PATH}/stm32f7xx_hal_spi_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_SPI_MODULE_ENABLED")
+endif()
+
+if(HAL_TIM_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_tim.c ${DRV_SRC_PATH}/stm32f7xx_hal_tim_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_TIM_MODULE_ENABLED")
+endif()
+
+if(HAL_UART_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_uart.c ${DRV_SRC_PATH}/stm32f7xx_hal_uart_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_UART_MODULE_ENABLED")
+endif()
+
+if(HAL_USART_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_usart.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_USART_MODULE_ENABLED")
+endif()
+
+if(HAL_IRDA_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_irda.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_IRDA_MODULE_ENABLED")
+endif()
+
+if(HAL_SMARTCARD_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_smartcard.c ${DRV_SRC_PATH}/stm32f7xx_hal_smartcard_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_SMARTCARD_MODULE_ENABLED")
+endif()
+
+if(HAL_WWDG_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_wwdg.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_WWDG_MODULE_ENABLED")
+endif()
+
+if(HAL_PCD_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_pcd.c ${DRV_SRC_PATH}/stm32f7xx_hal_pcd_ex.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_PCD_MODULE_ENABLED")
+endif()
+
+if(HAL_HCD_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_hcd.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_HCD_MODULE_ENABLED")
+endif()
+
+if(HAL_DFSDM_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_dfsdm.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_DFSDM_MODULE_ENABLED")
+endif()
+
+if(HAL_DSI_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_dsi.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_DSI_MODULE_ENABLED")
+endif()
+
+if(HAL_JPEG_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_jpeg.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_JPEG_MODULE_ENABLED")
+endif()
+
+if(HAL_MDIOS_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_mdios.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_MDIOS_MODULE_ENABLED")
+endif()
+
+if(HAL_SMBUS_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_smbus.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_SMBUS_MODULE_ENABLED")
+endif()
+
+if(HAL_MMC_MODULE_ENABLED)
+    set(BSP_C_SOURCES ${BSP_C_SOURCES} ${DRV_SRC_PATH}/stm32f7xx_hal_mmc.c)
+    set(BSP_DEFINES "${BSP_DEFINES} -DHAL_MMC_MODULE_ENABLED")
+endif()
+
+set_source_files_properties(${BSP_C_SOURCES}
+    PROPERTIES COMPILE_FLAGS ${BSP_DEFINES}
+)

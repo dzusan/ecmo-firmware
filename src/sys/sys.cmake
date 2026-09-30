@@ -1,0 +1,10 @@
+set(SYS_PATH ${CMAKE_CURRENT_LIST_DIR})
+
+set(SYS_C_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/syscalls.c 
+    ${CMAKE_CURRENT_LIST_DIR}/sysmem.c     
+)
+
+set(SYS_INCLUDES 
+    ${CMAKE_CURRENT_LIST_DIR}
+)

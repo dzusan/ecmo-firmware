@@ -1,0 +1,18 @@
+[submodule "thirdparty/freertos"]
+	path = thirdparty/freertos
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+[submodule "thirdparty/stm32f7xx_hal_driver"]
+	path = thirdparty/stm32f7xx_hal_driver
+	url = https://github.com/STMicroelectronics/stm32f7xx_hal_driver.git
+[submodule "thirdparty/cmsis_device_f7"]
+	path = thirdparty/cmsis_device_f7
+	url = https://github.com/STMicroelectronics/cmsis_device_f7.git
+[submodule "thirdparty/cmsis_core"]
+	path = thirdparty/cmsis_core
+	url = https://github.com/STMicroelectronics/cmsis_core.git
+[submodule "thirdparty/lvgl"]
+	path = thirdparty/lvgl
+	url = https://github.com/lvgl/lvgl
+[submodule "thirdparty/stm32_mw_usb_device"]
+	path = thirdparty/stm32_mw_usb_device
+	url = https://github.com/STMicroelectronics/stm32_mw_usb_device.git

@@ -1,0 +1,36 @@
+{
+    "configurations": [
+        {
+            "name": "app",
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+            "includePath": [
+                "${workspaceRoot}/src",
+                "${workspaceRoot}/src/bsp/include",
+                "${workspaceRoot}/src/bsp/src",
+                "${workspaceRoot}/src/freertos_config",
+                "${workspaceRoot}/src/sys",
+                "${workspaceRoot}/thirdparty/stm32f7xx_hal_driver/Inc",
+                "${workspaceRoot}/thirdparty/stm32f7xx_hal_driver/Src",
+                "${workspaceRoot}/thirdparty/stm32f7xx_hal_driver/Inc/Legacy",
+                "${workspaceRoot}/thirdparty/stm32f7xx_hal_driver/Src/Legacy",
+                "${workspaceRoot}/thirdparty/cmsis_device_f7/Include",
+                "${workspaceRoot}/thirdparty/cmsis_device_f7/Source/Templates",
+                "${workspaceRoot}/thirdparty/cmsis_core/Include",
+                "${workspaceRoot}/thirdparty/freertos",
+                "${workspaceRoot}/thirdparty/freertos/include",
+                "${workspaceRoot}/thirdparty/freertos/portable/GCC/ARM_CM7/r0p1",
+
+                "${workspaceRoot}/thirdparty/lvgl/src/widgets/label"
+            ],
+            "defines": [
+                "USE_HAL_DRIVER",
+                "STM32F777xx"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64",
+            "compileCommands": "${workspaceFolder}/bin/compile_commands.json"
+        }
+    ],
+    "version": 4
+}

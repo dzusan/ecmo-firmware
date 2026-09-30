@@ -1,0 +1,12 @@
+set(SENSE_PATH ${CMAKE_CURRENT_LIST_DIR})
+
+set(SENSE_C_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/analog.c
+    ${CMAKE_CURRENT_LIST_DIR}/cbuf.c
+    ${CMAKE_CURRENT_LIST_DIR}/flow.c
+    ${CMAKE_CURRENT_LIST_DIR}/temperature.c
+)
+    
+set(SENSE_INCLUDES 
+    ${CMAKE_CURRENT_LIST_DIR}
+)
